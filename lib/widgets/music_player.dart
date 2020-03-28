@@ -19,10 +19,11 @@ class MusicPlayer extends StatefulWidget{
         centerPadding:0.0,
         bottomPadding:34.0,
         barColorsStyle:null,
+        buttonOffset:3.35
   }){
     _state = MusicPlayerState(path, backgroundColor, borderColor,
         fontSize, width, height, topPadding, centerPadding,
-        bottomPadding, barColorsStyle);
+        bottomPadding, barColorsStyle, buttonOffset);
   }
 
   @override
@@ -60,10 +61,12 @@ class MusicPlayerState extends State<MusicPlayer> {
 
   StreamSubscription<PlayStatus> _mediaInfo;
 
+  double _buttonsOffset;
+
 
   MusicPlayerState(this._path, this._backgroundColor, this._borderColour,
       this._fontSize, this._width, this._height, this._topPadding,
-      this._centerPadding, this._bottomPadding, this._barColorsStyle);
+      this._centerPadding, this._bottomPadding, this._barColorsStyle, this._buttonsOffset);
 
   @override
   void initState() {
@@ -162,7 +165,7 @@ class MusicPlayerState extends State<MusicPlayer> {
                   child: Row(
                     children: <Widget>[
                       SizedBox(
-                        width: _width / 3,
+                        width: _width / _buttonsOffset,
                       ),
 
                       IconButton(

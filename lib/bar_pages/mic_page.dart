@@ -181,16 +181,10 @@ class MicUploadPage extends StatefulWidget{
 
 class MicUploadPageState extends State<MicUploadPage> {
 
-  FlutterSound _flutterSound;
-
   var _path;
 
   MicUploadPageState(this._path);
 
-  @override
-  void initState() {
-    _flutterSound = new FlutterSound();
-  }
 
 
   @override
@@ -199,31 +193,53 @@ class MicUploadPageState extends State<MicUploadPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: _return,
           iconSize: 30,
         ),
       ),
-      body: Center(
+      body: Align(
+        alignment: Alignment.topCenter,
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+         // mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Text(
-                  'Проверьте корректно ли записалось аудио',
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(20, 40, 20, 0),
+                child: Text(
+                  '1. Проверьте корректно ли записалось аудио',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold
                   ),
+                ),
               ),
-            ),
+              ),
             Expanded(
               flex: 2,
               child: MusicPlayer(_path),
             ),
-            SizedBox(
-              height: 300,
+            Expanded(
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Text(
+                  '2. Отправить или презаписать?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child:SizedBox(
+                height: 20,
+              ) ,
             )
           ],
         ),
@@ -233,7 +249,9 @@ class MicUploadPageState extends State<MicUploadPage> {
         child: Row(
 
           children: <Widget>[
-
+            SizedBox(
+              width: 80,
+            ),
             SizedBox(
               width: 130,
               height: 130,
@@ -244,7 +262,11 @@ class MicUploadPageState extends State<MicUploadPage> {
                 ),
                 heroTag: 'rerecord',
                 backgroundColor: Colors.red,
+                onPressed: _return,
               ),
+            ),
+            SizedBox(
+              width: 15,
             ),
 
             SizedBox(
@@ -267,8 +289,13 @@ class MicUploadPageState extends State<MicUploadPage> {
       ),
       //floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: SizedBox(
-        height: 70,
+        height: 50,
       ),
     );
   }
+
+  void _return(){
+    Navigator.pop(context);
+  }
 }
+
