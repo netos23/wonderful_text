@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:awsome_text/widgets/audio_recorder.dart';
 import 'package:awsome_text/widgets/decoration.dart';
+import 'package:awsome_text/widgets/music_player.dart';
+import 'package:uuid/uuid.dart';
 
 class MicPage extends StatefulWidget{
   @override
@@ -23,23 +25,42 @@ class MicPageState extends State<MicPage> {
   AudioRecorder _audioRecorder;
   int _currentAudioState = 0;
 
-  MicPageState() {
-    Future<Directory> tempDir = getTemporaryDirectory();
+
+
+  @override
+  void initState() {
+    super.initState();
+    _mkDir();
+
+  }
+
+  void _mkDir() async{
+    Directory tempDir = (await getExternalStorageDirectories( type: StorageDirectory.downloads))[0];
     File outputFile;
-    tempDir.then((value) =>
-    {
-      outputFile = File('${value.path}/flutter_sound_tmp.aac'),
-      _path = outputFile.path
-    });
+    outputFile = File('${tempDir.path}/${Uuid().v1()}.aac');
+
+      _path = outputFile.path;
 
     _recorderEngine = new FlutterSound();
 
-    _audioRecorder = AudioRecorder(_recorderEngine, _path);
+
+
+    _audioRecorder = AudioRecorder(_recorderEngine, _path,_uploadRoute);
 
     _audioRecorder.setOnRecorderStateChange((int state) {
       setState(() {
         _currentAudioState = state;
       });
+    });
+
+
+
+  }
+
+  void _uploadRoute(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MicUploadPage(_path)));
+    setState(() {
+      _audioRecorder.setState(0);
     });
   }
 
@@ -141,4 +162,113 @@ class MicPageState extends State<MicPage> {
     );
   }
 
+}
+
+class MicUploadPage extends StatefulWidget{
+
+  MicUploadPageState _micUploadPageState;
+
+  MicUploadPage(String path){
+    _micUploadPageState = new MicUploadPageState(path);
+  }
+
+  @override
+  MicUploadPageState createState() => _micUploadPageState;
+
+
+
+}
+
+class MicUploadPageState extends State<MicUploadPage> {
+
+  FlutterSound _flutterSound;
+
+  var _path;
+
+  MicUploadPageState(this._path);
+
+  @override
+  void initState() {
+    _flutterSound = new FlutterSound();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {},
+          iconSize: 30,
+        ),
+      ),
+      body: Center(
+        child: Column(
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Text(
+                  'Проверьте корректно ли записалось аудио',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: MusicPlayer(_path),
+            ),
+            SizedBox(
+              height: 300,
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomCenter,
+        child: Row(
+
+          children: <Widget>[
+
+            SizedBox(
+              width: 130,
+              height: 130,
+              child: FloatingActionButton(
+                child: Icon(
+                    Icons.refresh,
+                    size: 100,
+                ),
+                heroTag: 'rerecord',
+                backgroundColor: Colors.red,
+              ),
+            ),
+
+            SizedBox(
+              width: 130,
+              height: 130,
+
+              child: FloatingActionButton(
+                child: Icon(
+                    Icons.done_outline,
+                    size: 100,
+
+                ),
+                heroTag: 'done',
+              ),
+            ),
+
+
+          ],
+        ),
+      ),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: SizedBox(
+        height: 70,
+      ),
+    );
+  }
 }

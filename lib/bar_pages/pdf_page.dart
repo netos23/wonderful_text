@@ -39,7 +39,7 @@ class PDFPageState extends State<PDFPage>{
       appBar: AppBar(
         title: Text("pdf"),
       ),
-      floatingActionButton: AudioRecorder(_recorder, _path),
+      floatingActionButton: AudioRecorder(_recorder, _path,(){}),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

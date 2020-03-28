@@ -11,8 +11,8 @@ class AudioRecorder extends StatefulWidget{
 
 
 
-  AudioRecorder(_recorder, _path){
-    _recorderState = AudioRecorderState(_recorder, _path);
+  AudioRecorder(_recorder, _path,Function onRecordEnd){
+    _recorderState = AudioRecorderState(_recorder, _path,onRecordEnd);
   }
 
   @override
@@ -36,6 +36,8 @@ class AudioRecorder extends StatefulWidget{
 
 
 class AudioRecorderState extends State<AudioRecorder> {
+
+  //todo: отрефакторить глобальные переменные
   FlutterSound _recorder;
   String _path;
 
@@ -47,8 +49,9 @@ class AudioRecorderState extends State<AudioRecorder> {
   double _shapeRadius = 10;
   double _defoultShapeRadious = 15;
   double _maxShapeRadious = 25;
+  Function _onRecordEnd;
 
-  AudioRecorderState(this._recorder, this._path);
+  AudioRecorderState(this._recorder, this._path,this._onRecordEnd);
 
 
   @override
@@ -67,7 +70,7 @@ class AudioRecorderState extends State<AudioRecorder> {
       ),
 
       child: FloatingActionButton(
-          onPressed: (_state == 0) ? _startRecord : _stopRecord,
+          onPressed: (_state == 0) ? _startRecord : _postRecordingProcess,
           foregroundColor: Colors.green,
           child: Center(
             child: Icon(
@@ -88,7 +91,7 @@ class AudioRecorderState extends State<AudioRecorder> {
     if (_recorder.audioState == t_AUDIO_STATE.IS_STOPPED) {
       _state = 1;
       _stateChange(_state);
-      await _recorder.startRecorder(
+      String s  = await _recorder.startRecorder(
           uri: _path, codec: t_CODEC.CODEC_AAC);
       _recorder.setDbPeakLevelUpdate(0.1);
 
@@ -103,7 +106,8 @@ class AudioRecorderState extends State<AudioRecorder> {
               : _shapeRadius;
         });
       });
-
+      print(s);
+      print(_path);
       _recorderSubscribtion = _recorder.onRecorderStateChanged.listen((event) {
         //получение времени
         if (event != null) {
@@ -121,6 +125,10 @@ class AudioRecorderState extends State<AudioRecorder> {
         }
       });
     }
+  }
+  void _postRecordingProcess(){
+    _stopRecord();
+    _onRecordEnd();
   }
 
   void _stopRecord() async {
