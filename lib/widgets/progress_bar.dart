@@ -9,7 +9,7 @@ class ProgressBar extends StatefulWidget{
   ProgressBar({
     width: 100.0,
     height: 20.0,
-    duration: const Duration(milliseconds: 300),
+    duration: const Duration(milliseconds: 400),
     progress: 0.0,
     boarderColour: Colors.black,
     forgeGroundColour:  Colors.green,

@@ -106,8 +106,6 @@ class AudioRecorderState extends State<AudioRecorder> {
               : _shapeRadius;
         });
       });
-      print(s);
-      print(_path);
       _recorderSubscribtion = _recorder.onRecorderStateChanged.listen((event) {
         //получение времени
         if (event != null) {

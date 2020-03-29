@@ -28,7 +28,7 @@ dependencies:
  # flutter_sound: 3.0.0
   uuid: any
   path_provider: 1.6.5
-  flutter_animation_progress_bar: ^1.0.0
+
 
   flutter_bloc: 0.4.11
   http: 0.12.0

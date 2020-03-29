@@ -1,8 +1,11 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:awsome_text/net/mic_http_client.dart';
+import 'package:http/http.dart' as http;
 
 
+import 'package:awsome_text/widgets/audio_note.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,7 +17,7 @@ import 'package:uuid/uuid.dart';
 
 class MicPage extends StatefulWidget{
   @override
-  MicPageState createState() =>MicPageState();
+  MicPageState createState() =>MicPageState("Voice notes");
 }
 
 
@@ -25,7 +28,10 @@ class MicPageState extends State<MicPage> {
   AudioRecorder _audioRecorder;
   int _currentAudioState = 0;
 
+  String _title;
 
+
+  MicPageState(this._title);
 
   @override
   void initState() {
@@ -35,9 +41,11 @@ class MicPageState extends State<MicPage> {
   }
 
   void _mkDir() async{
-    Directory tempDir = (await getExternalStorageDirectories( type: StorageDirectory.downloads))[0];
+    Directory tempDir = (await getExternalStorageDirectories( type: StorageDirectory.music))[0];
+    //Directory tempDir = await getApplicationSupportDirectory();
     File outputFile;
     outputFile = File('${tempDir.path}/${Uuid().v1()}.aac');
+    //outputFile = File('${tempDir.path}/music/${Uuid().v1()}.aac');
 
       _path = outputFile.path;
 
@@ -58,10 +66,14 @@ class MicPageState extends State<MicPage> {
   }
 
   void _uploadRoute(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>MicUploadPage(_path)));
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MicUploadPage(_path,_title)));
     setState(() {
       _audioRecorder.setState(0);
     });
+  }
+
+  void _settingsRoute(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>Settings()));
   }
 
   @override
@@ -70,8 +82,19 @@ class MicPageState extends State<MicPage> {
       appBar: AppBar(
 
         title: Text(
-            "Voice notes"
+            _title
         ),
+        actions: <Widget>[
+          (_currentAudioState==0)
+              ? IconButton(
+                icon: Icon(
+                  Icons.more_vert
+                ),
+                onPressed: _settingsRoute,
+              )
+              :Container()
+        ],
+
       ),
       body: AnimatedCrossFade(
           firstChild: Container(
@@ -168,8 +191,8 @@ class MicUploadPage extends StatefulWidget{
 
   MicUploadPageState _micUploadPageState;
 
-  MicUploadPage(String path){
-    _micUploadPageState = new MicUploadPageState(path);
+  MicUploadPage(String path,title){
+    _micUploadPageState = new MicUploadPageState(path,title);
   }
 
   @override
@@ -182,8 +205,9 @@ class MicUploadPage extends StatefulWidget{
 class MicUploadPageState extends State<MicUploadPage> {
 
   var _path;
+  var _title;
 
-  MicUploadPageState(this._path);
+  MicUploadPageState(this._path,this._title);
 
 
 
@@ -191,10 +215,13 @@ class MicUploadPageState extends State<MicUploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
+        /*leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: _return,
           iconSize: 30,
+        ),*/
+        title: Text(
+            _title
         ),
       ),
       body: Align(
@@ -279,6 +306,7 @@ class MicUploadPageState extends State<MicUploadPage> {
                     size: 100,
 
                 ),
+                onPressed: _push,
                 heroTag: 'done',
               ),
             ),
@@ -297,5 +325,272 @@ class MicUploadPageState extends State<MicUploadPage> {
   void _return(){
     Navigator.pop(context);
   }
+
+  void _push(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MicResultPage(_path,_title)));
+  }
 }
 
+class MicResultPage extends StatefulWidget{
+  MicResultPageState _state;
+
+  MicResultPage(path,title){
+    _state = MicResultPageState(path,title);
+  }
+
+  @override
+  MicResultPageState createState()=> _state;
+}
+
+class MicResultPageState extends State<MicResultPage> {
+
+  String _path;
+  String _title;
+
+  MicHttpClient client;
+
+
+  MicResultPageState(this._path, this._title);
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    client = MicHttpClient();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          //leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){}),
+          title: Text(_title),
+        ),
+        body: Center(
+          child: FutureBuilder<String>(
+            future: client.postRequest(http.Client(), _path, true),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) print(snapshot.error);
+
+              return snapshot.hasData
+                  ? Center(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 100,
+                          ),
+                          AudioNote(_path, snapshot.data),
+                          FloatingActionButton(
+
+                          )
+                        ],
+                      ),
+                   )
+                  : Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 200,
+                      ),
+
+                      Text(
+                        'Your audio note is loading',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 40
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+
+                      CircularProgressIndicator()
+                ],
+              );
+            },
+          ),
+        )
+    );
+  }
+
+}
+
+class SettingsState extends State<Settings> {
+
+  final TextStyle _fontStyle = const TextStyle(
+    //fontWeight: FontWeight.bold,
+    fontSize: 20,
+  );
+
+  MicPageConfiguration _configuration;
+  bool _isPunct;
+  String  _lang;
+  int _duration;
+  bool _inited;
+
+  @override
+  void initState() {
+    super.initState();
+    _inited = true;
+    _configuration = MicPageConfiguration();
+    _getConfig();
+  }
+
+  Future<bool> _getConfig()async{
+    if(_inited) {
+      await _configuration.mkDir();
+      _isPunct = _configuration.isPunctuation;
+      _lang = _configuration.language;
+      _duration = _configuration.maximumDuration;
+      _inited = false;
+      print(_lang);
+      return true;
+    }else{
+      return _inited;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Settings'),
+        ),
+        body: FutureBuilder(
+            future: _getConfig(),
+            builder: (context, snap) {
+              return snap.hasData
+                  ? ListView(
+                    children: <Widget>[
+                    ListTile(
+                      title: Text(
+                        'Language',
+                        style: _fontStyle,
+                      ),
+                      trailing:Text(
+                          _lang,
+                        ),
+
+
+                    ),
+                    Divider(),
+                    ListTile(
+                      title: Text(
+                        'Automatic punctuation',
+                        style: _fontStyle,
+                      ),
+                      trailing: Checkbox(
+                        value: _isPunct,
+                        onChanged: _updateCheckBox,
+                      ),
+                    ),
+                    Divider(),
+                    ListTile(
+                      title: Text(
+                        'Maximum duration',
+                        style: _fontStyle,
+                      ),
+
+                    ),
+
+                ],
+              )
+                  : CircularProgressIndicator();
+            })
+    );
+  }
+
+
+  void _updateCheckBox(value) {
+    setState(() {
+      _isPunct = value;
+    });
+    _configuration.isPunctuation = value;
+    _configuration.safe();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _configuration.safe();
+    _inited = true;
+  }
+
+
+}
+
+class Settings extends StatefulWidget{
+
+  @override
+  SettingsState createState() =>SettingsState();
+
+
+}
+
+class MicPageConfiguration{
+  String _language;
+  int _maximumDuration;
+  bool _isPunctuation;
+
+  MicPageConfiguration();
+  /*MicPageConfiguration(this._language, this._maximumDuration,
+      this._isPunctuation);*/
+
+  MicPageConfiguration.load(){
+    mkDir();
+  }
+
+  Future<bool> mkDir()async{
+
+    Directory directory = await getExternalStorageDirectory();
+    File configFile = File('${directory.path}/config/audio.txt');
+    if(!( configFile.existsSync())){
+      configFile.createSync(recursive: true);
+      this._language = 'english';
+      this._maximumDuration = Duration(minutes: 5).inMilliseconds;
+      this._isPunctuation = true;
+      safe();
+
+    }else{
+      var data =  configFile.readAsStringSync().split(' ');
+      this._language = data[0];
+      this._maximumDuration = int.parse(data[1]);
+      this._isPunctuation = data[2]=='true';
+
+    }
+
+    return true;
+  }
+
+  void safe()async{
+    Directory directory = await getExternalStorageDirectory();
+    File configFile = File('${directory.path}/config/audio.txt');
+    configFile.writeAsString('${_language} ${_maximumDuration} ${_isPunctuation}');
+    print('settings saved');
+  }
+
+
+  String get language => _language;
+
+  set language(String value) {
+    _language = value;
+  }
+
+  int get maximumDuration => _maximumDuration;
+
+  set maximumDuration(int value) {
+    _maximumDuration = value;
+  }
+
+  bool get isPunctuation => _isPunctuation;
+
+  set isPunctuation(bool value) {
+    _isPunctuation = value;
+  }
+
+
+
+
+
+}

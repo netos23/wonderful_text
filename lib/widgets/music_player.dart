@@ -247,6 +247,31 @@ class MusicPlayerState extends State<MusicPlayer> {
 
 }
 
+class MusicPlayerColorStyle{
+
+  Color _backgroundColor;
+  Color _borderColour;
+  ProgressBarColorsStyle _barColorsStyle;
+
+  MusicPlayerColorStyle({
+    backgroundColor: Colors.blue,
+    borderColor: Colors.white,
+    barStyle: null
+  }){
+    this._backgroundColor = backgroundColor;
+    this._borderColour = borderColor;
+    this._barColorsStyle = (barStyle!=null)?barStyle:ProgressBarColorsStyle();
+
+  }
+
+  ProgressBarColorsStyle get barColorsStyle => _barColorsStyle;
+
+  Color get borderColour => _borderColour;
+
+  Color get backgroundColor => _backgroundColor;
+
+
+}
 
 /*
 enum Music{
