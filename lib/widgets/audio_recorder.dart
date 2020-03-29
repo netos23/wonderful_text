@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:awsome_text/bar_pages/mic_page.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 
 int _state = 0;
@@ -36,7 +37,7 @@ class AudioRecorder extends StatefulWidget{
 
 
 class AudioRecorderState extends State<AudioRecorder> {
-
+  final List<int> _modes = <int>[1,3,5,7,9];
   //todo: отрефакторить глобальные переменные
   FlutterSound _recorder;
   String _path;
@@ -89,6 +90,8 @@ class AudioRecorderState extends State<AudioRecorder> {
 
   void _startRecord() async {
     if (_recorder.audioState == t_AUDIO_STATE.IS_STOPPED) {
+      MicPageConfiguration configuration = new MicPageConfiguration();
+      await configuration.mkDir();
       _state = 1;
       _stateChange(_state);
       String s  = await _recorder.startRecorder(
@@ -117,7 +120,7 @@ class AudioRecorderState extends State<AudioRecorder> {
                 date.second.toString() + "/ 5 : 00");
           });*/
 
-          if (_currentTime.minute >= 5) {
+          if (_currentTime.minute >= _modes[configuration.maximumDuration]) {
             _stopRecord();
           }
         }

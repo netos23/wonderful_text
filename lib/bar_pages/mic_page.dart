@@ -207,9 +207,16 @@ class MicUploadPageState extends State<MicUploadPage> {
   var _path;
   var _title;
 
+  MusicPlayer _player;
+
   MicUploadPageState(this._path,this._title);
 
 
+  @override
+  void initState() {
+    super.initState();
+    _player = MusicPlayer(_path);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +253,7 @@ class MicUploadPageState extends State<MicUploadPage> {
               ),
             Expanded(
               flex: 2,
-              child: MusicPlayer(_path),
+              child: _player,
             ),
             Expanded(
               flex: 1,
@@ -329,6 +336,14 @@ class MicUploadPageState extends State<MicUploadPage> {
   void _push(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>MicResultPage(_path,_title)));
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _player.stop();
+  }
+
+
 }
 
 class MicResultPage extends StatefulWidget{
@@ -347,17 +362,17 @@ class MicResultPageState extends State<MicResultPage> {
   String _path;
   String _title;
 
-  MicHttpClient client;
+  MicHttpClient _client;
 
 
   MicResultPageState(this._path, this._title);
 
 
-
   @override
   void initState() {
     super.initState();
-    client = MicHttpClient();
+    _client = MicHttpClient();
+
   }
 
   @override
@@ -369,26 +384,27 @@ class MicResultPageState extends State<MicResultPage> {
         ),
         body: Center(
           child: FutureBuilder<String>(
-            future: client.postRequest(http.Client(), _path, true),
+            future: _client.postRequest(
+                http.Client(), _path),
             builder: (context, snapshot) {
               if (snapshot.hasError) print(snapshot.error);
 
               return snapshot.hasData
                   ? Center(
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 100,
-                          ),
-                          AudioNote(_path, snapshot.data),
-                          FloatingActionButton(
-
-                          )
-                        ],
-                      ),
-                   )
-                  : Column(
+                child: Column(
                     children: <Widget>[
+                      SizedBox(
+                        height: 100,
+                      ),
+                      AudioNote(_path, snapshot.data),
+                      FloatingActionButton(
+
+                      )
+                    ],
+                ),
+              )
+                  : Column(
+                children: <Widget>[
                       SizedBox(
                         height: 200,
                       ),
@@ -417,7 +433,9 @@ class MicResultPageState extends State<MicResultPage> {
 }
 
 class SettingsState extends State<Settings> {
-
+  final List<String> _langs = <String>['english','russian','auto'];
+  final List<String> _modes = <String>['1 minute','3 minutes','5 minutes',
+  '7 minute','9 minute'];
   final TextStyle _fontStyle = const TextStyle(
     //fontWeight: FontWeight.bold,
     fontSize: 20,
@@ -425,7 +443,7 @@ class SettingsState extends State<Settings> {
 
   MicPageConfiguration _configuration;
   bool _isPunct;
-  String  _lang;
+  int  _lang;
   int _duration;
   bool _inited;
 
@@ -462,15 +480,22 @@ class SettingsState extends State<Settings> {
             builder: (context, snap) {
               return snap.hasData
                   ? ListView(
-                    children: <Widget>[
+                children: <Widget>[
                     ListTile(
-                      title: Text(
-                        'Language',
-                        style: _fontStyle,
-                      ),
-                      trailing:Text(
-                          _lang,
+                        title: Text(
+                          'Language',
+                          style: _fontStyle,
                         ),
+                        trailing: DropdownButton<String>(
+                            value: _langs[_lang],
+                            items: _langs.map<DropdownMenuItem<String>>((
+                                String v) {
+                              return DropdownMenuItem<String>(
+                                value: v,
+                                child: Text(v),
+                              );
+                            }).toList(),
+                            onChanged: _updateLang)
 
 
                     ),
@@ -487,11 +512,20 @@ class SettingsState extends State<Settings> {
                     ),
                     Divider(),
                     ListTile(
-                      title: Text(
-                        'Maximum duration',
-                        style: _fontStyle,
-                      ),
-
+                        title: Text(
+                          'Maximum duration',
+                          style: _fontStyle,
+                        ),
+                        trailing: DropdownButton<String>(
+                          value: _modes[_duration],
+                          items: _modes.map<DropdownMenuItem<String>>((String v) {
+                            return DropdownMenuItem<String>(
+                              value: v,
+                              child: Text(v),
+                            );
+                          }).toList(),
+                          onChanged: _updateDuration,
+                        )
                     ),
 
                 ],
@@ -507,6 +541,21 @@ class SettingsState extends State<Settings> {
       _isPunct = value;
     });
     _configuration.isPunctuation = value;
+    _configuration.safe();
+  }
+
+  void _updateLang(String value){
+    setState(() {
+      _lang = _langs.indexOf(value);
+    });
+    _configuration._language = _lang;
+    _configuration.safe();
+  }
+  void _updateDuration(String value){
+    setState(() {
+      _duration = _modes.indexOf(value);
+    });
+    _configuration._maximumDuration = _duration;
     _configuration.safe();
   }
 
@@ -529,7 +578,7 @@ class Settings extends StatefulWidget{
 }
 
 class MicPageConfiguration{
-  String _language;
+  int _language;
   int _maximumDuration;
   bool _isPunctuation;
 
@@ -547,14 +596,14 @@ class MicPageConfiguration{
     File configFile = File('${directory.path}/config/audio.txt');
     if(!( configFile.existsSync())){
       configFile.createSync(recursive: true);
-      this._language = 'english';
-      this._maximumDuration = Duration(minutes: 5).inMilliseconds;
+      this._language = 0;
+      this._maximumDuration = 2;
       this._isPunctuation = true;
       safe();
 
     }else{
       var data =  configFile.readAsStringSync().split(' ');
-      this._language = data[0];
+      this._language = int.parse(data[0]);
       this._maximumDuration = int.parse(data[1]);
       this._isPunctuation = data[2]=='true';
 
@@ -571,9 +620,9 @@ class MicPageConfiguration{
   }
 
 
-  String get language => _language;
+  int get language => _language;
 
-  set language(String value) {
+  set language(int value) {
     _language = value;
   }
 

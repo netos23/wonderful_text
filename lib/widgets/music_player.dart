@@ -29,7 +29,7 @@ class MusicPlayer extends StatefulWidget{
   @override
   MusicPlayerState createState() => _state;
 
-
+  void stop() => _state.stop();
 
 }
 
@@ -179,7 +179,7 @@ class MusicPlayerState extends State<MusicPlayer> {
 
                       IconButton(
                         icon: Icon(Icons.stop),
-                        onPressed: _stop,
+                        onPressed: stop,
                       )
                     ],
                   ),
@@ -224,7 +224,7 @@ class MusicPlayerState extends State<MusicPlayer> {
     }
   }
 
-  void _stop() async{
+  void stop() async{
     if(_player.audioState!=t_AUDIO_STATE.IS_STOPPED){
       await _player.stopPlayer();
       setState(() {
@@ -241,7 +241,7 @@ class MusicPlayerState extends State<MusicPlayer> {
   @override
   void dispose() {
     super.dispose();
-    _stop();
+    stop();
   }
 
 

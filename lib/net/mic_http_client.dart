@@ -5,18 +5,20 @@ import 'post.dart';
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:awsome_text/bar_pages/mic_page.dart';
 
 class MicHttpClient{
 
 
 
 
-  MicPostModel _configureRequest(String path, bool type){
+  MicPostModel _configureRequest(String path, bool type,int lang){
       String filename = path.substring(path.lastIndexOf("/")+1);
       return MicPostModel(
         "dfsfk-3242424-sadsd-33443-sssdsdf",
          type,
         _serializeFile(path),
+        lang
       );
   }
 
@@ -31,9 +33,11 @@ class MicHttpClient{
     return base64encoder.convert(bytes);
   }
 
-  Future<String> postRequest(http.Client client,String path, bool type) async {
+  Future<String> postRequest(http.Client client,String path) async {
+    MicPageConfiguration configuration = MicPageConfiguration();
+    await configuration.mkDir();
 
-    final requestBody = jsonEncode(_configureRequest(path, type));
+    final requestBody = jsonEncode(_configureRequest(path, configuration.isPunctuation,configuration.language));
 
     final response = await client.post("http://192.168.0.24:8080",
         //encoding:Encoding.getByName("utf-8"),

@@ -40,7 +40,7 @@ class CameraPageState extends State<CameraPage>{
     setState(() {
       body = FutureBuilder<String>(
 
-        future: client.postRequest(http.Client(), "/data/user/0/com.fbtw.awsome_text/cache/flutter_sound_tmp.aac", true),
+        future: client.postRequest(http.Client(), "/data/user/0/com.fbtw.awsome_text/cache/flutter_sound_tmp.aac"),
        // future: client.get(http.Client()),
         builder: (context,snapshot){
           if (snapshot.hasError) print(snapshot.error);
