@@ -48,18 +48,23 @@ class MicHttpClient{
         );
 
     MicResponseModel responseModel = _parseResponse(response.body);
-
-
     if(responseModel.message=="ok"){
-      String encodedText = responseModel.body;
-      var textBytes = base64.decode(encodedText);
-     /* String result="";
-      StringBuffer buffer = new StringBuffer();
-      buffer.
-      for(var byte in textBytes){
+      try {
+        String encodedText = responseModel.body;
 
+        var textBytes = base64.decode(encodedText);
+        /*var strings = encodedText.split('\r');
+      StringBuffer buffer = new StringBuffer();
+      for(var text in strings){
+        var textBytes = base64.decode(text);
+        buffer.write(utf8.decode(textBytes));
       }*/
-      return utf8.decode(textBytes);
+
+        return utf8.decode(textBytes);
+      }catch(E){
+        print(E);
+        return 'error';
+      }
     }else{
       return responseModel.message;
     }

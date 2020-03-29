@@ -27,7 +27,7 @@ class AudioNote extends StatelessWidget {
     _backgroundColor = backgroundColor;
     _borderColour = borderColour;
 
-    printFile();
+    //printFile();
   }
 
   AudioNote.fromFile(fileName){

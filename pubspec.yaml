@@ -29,7 +29,8 @@ dependencies:
   uuid: any
   path_provider: 1.6.5
 
-
+  clipboard_manager: ^0.0.1
+  toast: ^0.1.5
   flutter_bloc: 0.4.11
   http: 0.12.0
   equatable: 0.1.1

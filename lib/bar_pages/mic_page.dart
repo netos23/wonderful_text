@@ -15,6 +15,9 @@ import 'package:awsome_text/widgets/decoration.dart';
 import 'package:awsome_text/widgets/music_player.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:clipboard_manager/clipboard_manager.dart';
+import 'package:toast/toast.dart';
+
 class MicPage extends StatefulWidget{
   @override
   MicPageState createState() =>MicPageState("Voice notes");
@@ -364,6 +367,9 @@ class MicResultPageState extends State<MicResultPage> {
 
   MicHttpClient _client;
 
+  AudioNote _currentNote;
+
+  bool _inited;
 
   MicResultPageState(this._path, this._title);
 
@@ -371,6 +377,7 @@ class MicResultPageState extends State<MicResultPage> {
   @override
   void initState() {
     super.initState();
+    _inited = false;
     _client = MicHttpClient();
 
   }
@@ -381,6 +388,24 @@ class MicResultPageState extends State<MicResultPage> {
         appBar: AppBar(
           //leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){}),
           title: Text(_title),
+          actions: <Widget>[
+            (_inited)
+            ? IconButton(
+                icon: Icon(
+                  Icons.save
+                ),
+                onPressed: _save,
+              )
+            : Container(),
+            (_inited)
+                ? IconButton(
+                    icon: Icon(
+                      Icons.share
+                    ),
+                    onPressed: _share,
+                  )
+                : Container()
+          ],
         ),
         body: Center(
           child: FutureBuilder<String>(
@@ -391,20 +416,26 @@ class MicResultPageState extends State<MicResultPage> {
 
               return snapshot.hasData
                   ? Center(
-                child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 100,
-                      ),
-                      AudioNote(_path, snapshot.data),
-                      FloatingActionButton(
-
-                      )
-                    ],
-                ),
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 100,
+                          ),
+                          _buildAudioNote(_path, snapshot.data),
+                          FloatingActionButton(
+                              child: Icon(
+                                Icons.content_copy
+                              ),
+                              onPressed: ()async{
+                                await ClipboardManager.copyToClipBoard(snapshot.data);
+                                Toast.show("Copied to the clipboard", context);
+                              },
+                          )
+                        ],
+                    ),
               )
                   : Column(
-                children: <Widget>[
+                     children: <Widget>[
                       SizedBox(
                         height: 200,
                       ),
@@ -430,6 +461,25 @@ class MicResultPageState extends State<MicResultPage> {
     );
   }
 
+ /* void _copyToClipBoard(String value) async{
+    await ClipboardManager.copyToClipBoard(value);
+    Toast.show("Copied to the clipboard", context);
+  }*/
+  AudioNote _buildAudioNote(String path,String text){
+    _currentNote = AudioNote(path, text);
+    _inited = true;
+    return _currentNote;
+  }
+
+  void _save() {
+    if(_currentNote!=null) {
+      _currentNote.printFile();
+      Toast.show("Saved", context);
+    }
+  }
+
+  void _share() {
+  }
 }
 
 class SettingsState extends State<Settings> {
