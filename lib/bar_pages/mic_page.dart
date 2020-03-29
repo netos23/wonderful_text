@@ -372,14 +372,15 @@ class MicResultPageState extends State<MicResultPage> {
   bool _inited;
 
   MicResultPageState(this._path, this._title);
-
+  Future<String> _futureContent;
 
   @override
   void initState() {
     super.initState();
     _inited = false;
     _client = MicHttpClient();
-
+    _futureContent =  _client.postRequest(
+        http.Client(), _path);
   }
 
   @override
@@ -389,28 +390,38 @@ class MicResultPageState extends State<MicResultPage> {
           //leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){}),
           title: Text(_title),
           actions: <Widget>[
-            (_inited)
-            ? IconButton(
-                icon: Icon(
-                  Icons.save
-                ),
-                onPressed: _save,
-              )
-            : Container(),
-            (_inited)
-                ? IconButton(
-                    icon: Icon(
-                      Icons.share
-                    ),
-                    onPressed: _share,
-                  )
-                : Container()
+            FutureBuilder(
+              future: _futureContent,
+              builder: (context,snap){
+                return (snap.hasData)
+                    ? IconButton(
+                        icon: Icon(
+                            Icons.save
+                        ),
+                      onPressed: _save,
+                      )
+                    : Container();
+              },
+            ),
+            FutureBuilder(
+              future: _futureContent,
+              builder: (context,snap){
+                return (snap.hasData)
+                    ? IconButton(
+                          icon: Icon(
+                              Icons.share
+                          ),
+                          onPressed: _share,
+                        )
+                    : Container();
+              }
+            )
+
           ],
         ),
         body: Center(
           child: FutureBuilder<String>(
-            future: _client.postRequest(
-                http.Client(), _path),
+            future:_futureContent,
             builder: (context, snapshot) {
               if (snapshot.hasError) print(snapshot.error);
 
