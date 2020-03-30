@@ -32,18 +32,18 @@ class MicPageState extends State<MicPage> {
   int _currentAudioState = 0;
 
   String _title;
-
+  Future<bool> _futureContent;
 
   MicPageState(this._title);
 
   @override
   void initState() {
     super.initState();
-    _mkDir();
+    _futureContent = _mkDir();
 
   }
 
-  void _mkDir() async{
+  Future<bool> _mkDir() async{
     Directory tempDir = (await getExternalStorageDirectories( type: StorageDirectory.music))[0];
     //Directory tempDir = await getApplicationSupportDirectory();
     File outputFile;
@@ -65,7 +65,7 @@ class MicPageState extends State<MicPage> {
     });
 
 
-
+    return true;
   }
 
   void _uploadRoute(){
@@ -183,7 +183,17 @@ class MicPageState extends State<MicPage> {
               .showFirst : CrossFadeState.showSecond,
           duration: const Duration(seconds: 3)
       ),
-      floatingActionButton: _audioRecorder,
+      floatingActionButton: FutureBuilder<bool>(
+          future: _futureContent,
+          builder: (context,snap){
+            return snap.hasData
+                ? _audioRecorder
+                : Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CircularProgressIndicator(),
+              );
+          }
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
@@ -452,7 +462,7 @@ class MicResultPageState extends State<MicResultPage> {
                       ),
 
                       Text(
-                        'Your audio note is loading',
+                        'Your voice note is loading',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -472,10 +482,7 @@ class MicResultPageState extends State<MicResultPage> {
     );
   }
 
- /* void _copyToClipBoard(String value) async{
-    await ClipboardManager.copyToClipBoard(value);
-    Toast.show("Copied to the clipboard", context);
-  }*/
+
   AudioNote _buildAudioNote(String path,String text){
     _currentNote = AudioNote(path, text);
     _inited = true;
@@ -654,7 +661,7 @@ class MicPageConfiguration{
   Future<bool> mkDir()async{
 
     Directory directory = await getExternalStorageDirectory();
-    File configFile = File('${directory.path}/config/audio.txt');
+    File configFile = File('${directory.path}/config/audio.config');
     if(!( configFile.existsSync())){
       configFile.createSync(recursive: true);
       this._language = 0;
@@ -675,8 +682,8 @@ class MicPageConfiguration{
 
   void safe()async{
     Directory directory = await getExternalStorageDirectory();
-    File configFile = File('${directory.path}/config/audio.txt');
-    configFile.writeAsString('${_language} ${_maximumDuration} ${_isPunctuation}');
+    File configFile = File('${directory.path}/config/audio.config');
+    configFile.writeAsString('$_language $_maximumDuration $_isPunctuation');
     print('settings saved');
   }
 
@@ -698,9 +705,5 @@ class MicPageConfiguration{
   set isPunctuation(bool value) {
     _isPunctuation = value;
   }
-
-
-
-
 
 }

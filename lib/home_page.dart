@@ -48,7 +48,7 @@ class HomePageState extends State<HomePage>{
                 )
           ),
           BottomNavigationBarItem(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.green,
               icon: Icon(Icons.camera_alt),
               title: Text('Foto text')
           ),
@@ -57,11 +57,11 @@ class HomePageState extends State<HomePage>{
               icon: Icon(Icons.picture_as_pdf),
               title: Text('Make pdf')
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
               backgroundColor: Colors.blue,
               icon: Icon(Icons.featured_play_list),
               title: Text('Doc-gen')
-          ),
+          ),*/
           BottomNavigationBarItem(
               backgroundColor: Colors.green,
               icon: Icon(Icons.more_horiz),
@@ -69,7 +69,7 @@ class HomePageState extends State<HomePage>{
           ),
         ],
 
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.black,
         currentIndex: _selectedIndex,
         onTap: _onTouch,
       ),

@@ -26,9 +26,10 @@ dependencies:
   cupertino_icons: ^0.1.2
   flutter_sound: any
  # flutter_sound: 3.0.0
+  image_picker: 0.6.4
   uuid: any
   path_provider: 1.6.5
-
+  camera: any
   clipboard_manager: ^0.0.1
   toast: ^0.1.5
   flutter_bloc: 0.4.11
@@ -53,6 +54,7 @@ flutter:
 
   assets:
     - images/audio_app.png
+    - images/camera_app.png
     - images/au_gear1.png
     - images/au_gear2.png
     - images/au_engine_back.png
