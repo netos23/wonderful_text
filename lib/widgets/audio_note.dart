@@ -46,9 +46,9 @@ class AudioNote extends StatelessWidget {
     if(!dirFile.existsSync()){
       dirFile.createSync(recursive: true);
     }
-    File outputFile = File('${directory.path}/audioNotes/${Uuid().v1()}.txt');
+    File outputFile = File('${directory.path}/audioNotes/${Uuid().v1()}.anote');
     outputFile.createSync(recursive: true);
-    await outputFile.writeAsString('${_path} ~${_text}');
+    await outputFile.writeAsString('$_path ~$_text');
 
 
   }

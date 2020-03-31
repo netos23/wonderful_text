@@ -31,7 +31,7 @@ class MicHttpClient extends FbtwHttpClient{
 
     final requestBody = jsonEncode(_configureRequest(path, configuration.isPunctuation,configuration.language));
 
-    final response = await client.post("http://192.168.0.24:8080",
+    final response = await client.post("http://192.168.0.24:8090/mic",
         //encoding:Encoding.getByName("utf-8"),
         headers: {
           'Content-type':'application/json'
@@ -40,6 +40,7 @@ class MicHttpClient extends FbtwHttpClient{
         );
 
     ResponseModel responseModel = _parseResponse(response.body);
+    print(responseModel.clientId);
     if(responseModel.message=="ok"){
       try {
         String encodedText = responseModel.body;
@@ -64,11 +65,13 @@ class MicHttpClient extends FbtwHttpClient{
 class CameraHttpClient extends FbtwHttpClient{
   @override
   CameraPostModel _configureRequest(path, type, lang) {
+    int index = path.toString().lastIndexOf('.')+1;
     return CameraPostModel(
         "dfsfk-3242424-sadsd-33443-sssdsdf",
         lang,
         type,
-        _serializeFile(path)
+        _serializeFile(path),
+        path.toString().substring(index)
     );
   }
 
@@ -77,16 +80,17 @@ class CameraHttpClient extends FbtwHttpClient{
     CameraPageConfiguration configuration = CameraPageConfiguration();
     await configuration.mkDir();
 
-    final requestBody = _configureRequest(path, configuration.type, configuration.language);
+    final request = _configureRequest(path, configuration.type, configuration.language);
+    final parsedRequest = json.encode(request);
 
-    final response = await client.post("http://192.168.0.24:8080",
+    final response = await client.post("http://192.168.0.24:8080/camera",
         headers: {
           'Content-type':'application/json'
         },
-        body: requestBody,
+        body: parsedRequest,
     );
-    
     ResponseModel responseModel = _parseResponse(response.body);
+    print(responseModel.clientId);
     if(responseModel.message=="ok"){
       try {
         String encodedText = responseModel.body;

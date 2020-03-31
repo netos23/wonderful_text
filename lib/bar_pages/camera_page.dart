@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:awsome_text/net/http_clients.dart';
+import 'package:awsome_text/widgets/note.dart';
+import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 
 class CameraPage extends StatefulWidget{
@@ -345,7 +349,7 @@ class CameraPreviewPage extends StatelessWidget{
   }
 
   void _push() {
-    Navigator.push(currentContext, MaterialPageRoute(builder: (context)=>CameraResultPage()));
+    Navigator.push(currentContext, MaterialPageRoute(builder: (context)=>CameraResultPage(_path,title)));
   }
 }
 
@@ -564,13 +568,122 @@ class CameraPageConfiguration{
 
 class CameraResultPage extends StatelessWidget{
 
+  Future<String> _futureContent;
+  String _title;
+  Note _currentNote;
+
+  BuildContext _currentContext;
+
+  CameraResultPage(String path, String title){
+    this._title = title;
+
+    CameraHttpClient client = CameraHttpClient();
+    //_futureContent = client.postRequest(http.Client(), path);
+    _futureContent = client.postRequest(http.Client(), path);
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
+    _currentContext = context;
     return Scaffold(
       appBar: AppBar(
+        title: Text(_title),
+        actions: <Widget>[
+          FutureBuilder<String>(
+            future: _futureContent,
+              builder: (context,snap){
+                return snap.hasData
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.save
+                        ),
+                        onPressed: _save,
+                      )
+                    : Container();
+              }
+          ),
+          FutureBuilder<String>(
+            future: _futureContent,
+              builder: (context,snap){
+                return snap.hasData
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.share
+                        ),
+                        onPressed: _share,
+                      )
+                    : Container();
+              }
+          ),
+
+        ],
+      ),
+      body: Center(
+        child: FutureBuilder<String>(
+            future: _futureContent,
+            builder: (context,snap){
+              return snap.hasData
+                  ? Center(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 100,
+                        ),
+                        _buildNote(snap),
+                        FloatingActionButton(
+                          child: Icon(
+                              Icons.content_copy
+                          ),
+                          onPressed: ()async{
+                            await ClipboardManager.copyToClipBoard(snap.data);
+                            Toast.show("Copied to the clipboard", context);
+                          },
+                        )
+                      ],
+                    ),
+                  )
+                  : Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 200,
+                        ),
+                        Text(
+                          'Your note is loading',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+
+                        CircularProgressIndicator()
+                      ],
+              );
+            }
+        ),
       ),
     );
   }
 
+  Note _buildNote(AsyncSnapshot<String> snap) {
+   _currentNote =  Note(snap.data);
+   return _currentNote;
+  }
+
+
+  void _save()async {
+    if(_currentNote!=null){
+      _currentNote.print();
+      Toast.show('saved',_currentContext);
+    }
+  }
+
+  void _share() {
+  }
 }

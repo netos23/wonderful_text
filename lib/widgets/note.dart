@@ -25,6 +25,26 @@ class Note extends StatelessWidget{
     this._textSize = textSize;
   }
 
+  factory Note.fromFile(filename){
+    File input = File(filename);
+    String inputBody = input.readAsStringSync();
+
+
+    return  Note(inputBody);
+
+  }
+
+  void print() async{
+    Directory directory = await getExternalStorageDirectory();
+    File dirFile = File('${directory.path}/notes/dir.info');
+    if(!dirFile.existsSync()){
+      dirFile.createSync(recursive: true);
+    }
+    File outputFile = File('${directory.path}/notes/${Uuid().v1()}.note');
+    outputFile.createSync(recursive: true);
+    await outputFile.writeAsString('$_text');
+  }
+
 
   @override
   Widget build(BuildContext context) {
