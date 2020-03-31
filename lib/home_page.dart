@@ -53,7 +53,7 @@ class HomePageState extends State<HomePage>{
               title: Text('Foto text')
           ),
           BottomNavigationBarItem(
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.green,
               icon: Icon(Icons.picture_as_pdf),
               title: Text('Make pdf')
           ),
