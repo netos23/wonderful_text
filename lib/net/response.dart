@@ -1,13 +1,13 @@
 
 
-class MicResponseModel{
+class ResponseModel{
   final String message;
   final String body;
 
-  MicResponseModel({this.message,this.body});
+  ResponseModel({this.message,this.body});
 
-  factory MicResponseModel.fromJson( Map<String,dynamic> json){
-      return MicResponseModel(
+  factory ResponseModel.fromJson( Map<String,dynamic> json){
+      return ResponseModel(
         message: json['message'],
         body: json['body']
       );

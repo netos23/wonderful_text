@@ -1,6 +1,6 @@
+import 'http_clients.dart';
 
-
-class MicPostModel {
+class MicPostModel extends PostRequest{
   final String key;
   final bool type;
   final String content;
@@ -15,4 +15,22 @@ class MicPostModel {
     'lang':lang
   };
   
+}
+
+class CameraPostModel extends PostRequest{
+  final String key;
+  final int lang;
+  final int type;
+  final String content;
+
+  CameraPostModel(this.key, this.lang, this.type, this.content);
+
+  Map<String,dynamic> toJson()=>{
+    'key':key,
+    'lang':lang,
+    'type':type,
+    'content':content
+  };
+
+
 }

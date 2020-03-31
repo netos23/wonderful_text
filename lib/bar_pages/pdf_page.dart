@@ -1,3 +1,4 @@
+import 'package:awsome_text/widgets/note.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
@@ -18,19 +19,6 @@ class PDFPage extends StatefulWidget{
 
 class PDFPageState extends State<PDFPage>{
 
-  String _path;
-  FlutterSound _recorder;
-
-  PDFPageState() {
-    Future<Directory> tempDir =  getTemporaryDirectory();
-    File outputFile;
-    tempDir.then((value) => {
-    outputFile =  File('${value.path}/flutter_sound_tmp.aac'),
-        _path = outputFile.path
-    });
-
-    _recorder = new FlutterSound();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +27,9 @@ class PDFPageState extends State<PDFPage>{
       appBar: AppBar(
         title: Text("pdf"),
       ),
-      floatingActionButton: AudioRecorder(_recorder, _path,(){}),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      body: Note(
+        'dsfdsjhfhdskjhfks'
+      ),
     );
   }
 

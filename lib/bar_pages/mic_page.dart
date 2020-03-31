@@ -1,7 +1,7 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:awsome_text/net/mic_http_client.dart';
+import 'package:awsome_text/net/http_clients.dart';
 import 'package:http/http.dart' as http;
 
 

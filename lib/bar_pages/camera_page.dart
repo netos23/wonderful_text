@@ -33,6 +33,7 @@ class CameraPageState extends State<CameraPage>with WidgetsBindingObserver{
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: Colors.green,
       appBar: AppBar(
         title: Text(title),
         actions: <Widget>[
@@ -526,7 +527,7 @@ class CameraPageConfiguration{
       var data =  configFile.readAsStringSync().split(' ');
       this._language = int.parse(data[0]);
       this._photoQuality = int.parse(data[1]);
-      this._type = int.parse(data[1]);
+      this._type = int.parse(data[2]);
 
     }
 
