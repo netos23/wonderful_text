@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:awsome_text/net/http_clients.dart';
 import 'package:awsome_text/widgets/note.dart';
+import 'package:awsome_text/widgets/share_page.dart';
 import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -573,11 +574,12 @@ class CameraResultPage extends StatelessWidget{
   Note _currentNote;
 
   BuildContext _currentContext;
+  CameraHttpClient client;
 
   CameraResultPage(String path, String title){
     this._title = title;
 
-    CameraHttpClient client = CameraHttpClient();
+    client = CameraHttpClient();
     //_futureContent = client.postRequest(http.Client(), path);
     _futureContent = client.postRequest(http.Client(), path);
 
@@ -684,6 +686,8 @@ class CameraResultPage extends StatelessWidget{
     }
   }
 
-  void _share() {
+  void _share() async{
+    String res = await _futureContent;
+    Navigator.push(_currentContext, MaterialPageRoute(builder: (context)=>SharePage(res,client.clientId)));
   }
 }

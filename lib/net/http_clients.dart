@@ -11,7 +11,7 @@ import 'package:awsome_text/bar_pages/mic_page.dart';
 
 class MicHttpClient extends FbtwHttpClient{
 
-
+String _clientId;
 
 
   MicPostModel _configureRequest( path,  type, lang){
@@ -43,6 +43,7 @@ class MicHttpClient extends FbtwHttpClient{
     print(responseModel.clientId);
     if(responseModel.message=="ok"){
       try {
+        _clientId = responseModel.clientId;
         String encodedText = responseModel.body;
 
         var textBytes = base64.decode(encodedText);
@@ -59,10 +60,15 @@ class MicHttpClient extends FbtwHttpClient{
 
   }
 
+String get clientId => _clientId;
+
 
 }
 
 class CameraHttpClient extends FbtwHttpClient{
+
+  String _clientId;
+
   @override
   CameraPostModel _configureRequest(path, type, lang) {
     int index = path.toString().lastIndexOf('.')+1;
@@ -92,6 +98,7 @@ class CameraHttpClient extends FbtwHttpClient{
     ResponseModel responseModel = _parseResponse(response.body);
     print(responseModel.clientId);
     if(responseModel.message=="ok"){
+      _clientId = responseModel.clientId;
       try {
         String encodedText = responseModel.body;
 
@@ -107,6 +114,9 @@ class CameraHttpClient extends FbtwHttpClient{
     }
 
   }
+
+  String get clientId => _clientId;
+
 
 }
 

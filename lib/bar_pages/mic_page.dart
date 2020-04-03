@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:awsome_text/net/http_clients.dart';
+import 'package:awsome_text/widgets/share_page.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -496,7 +497,9 @@ class MicResultPageState extends State<MicResultPage> {
     }
   }
 
-  void _share() {
+  void _share()async {
+    String res = await _futureContent;
+    Navigator.push(context, MaterialPageRoute(builder: (context)=> SharePage(res,_client.clientId)));
   }
 }
 

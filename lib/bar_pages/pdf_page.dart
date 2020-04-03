@@ -19,6 +19,9 @@ class PDFPage extends StatefulWidget{
 
 class PDFPageState extends State<PDFPage> {
 
+  List<Image> _pdfContent = <Image>[];
+
+
 
   @override
   Widget build(BuildContext context) {
