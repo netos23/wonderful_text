@@ -142,8 +142,13 @@ class MicPageState extends State<MicPage> {
 
               children: <Widget>[
                 Expanded(
-                  flex: 8,
-                child:  MicRecordingDecoration(),
+                  flex: 9,
+                  child:  MicRecordingDecoration(
+                    width: 500.0,
+                    height: 450.0,
+                    bottomOffsetY: 150.0,
+                    topOffsetX: 80.0,
+                  ),
             ),
 
                 Expanded(

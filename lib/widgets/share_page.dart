@@ -147,6 +147,7 @@ class SharePageState extends State<SharePage> {
   }
 
   void _googleDocsExport() {
+    Toast.show('Temporarily unavailable', context);
   }
 
   void _share() {

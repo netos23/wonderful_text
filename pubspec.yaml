@@ -37,6 +37,7 @@ dependencies:
   equatable: 0.1.1
   share: any
   flutter_downloader: any
+  flutter_uploader: any
 
 dev_dependencies:
   flutter_test:
