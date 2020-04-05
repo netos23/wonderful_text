@@ -62,6 +62,9 @@ flutter:
     - images/au_gear1.png
     - images/au_gear2.png
     - images/au_engine_back.png
+    - images/logo.png
+    - images/logo_alt.png
+    - images/sync.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
