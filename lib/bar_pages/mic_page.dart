@@ -21,7 +21,7 @@ import 'package:toast/toast.dart';
 
 class MicPage extends StatefulWidget{
   @override
-  MicPageState createState() =>MicPageState("Voice notes");
+  MicPageState createState() =>MicPageState('Voice notes');
 }
 
 
@@ -261,7 +261,7 @@ class MicUploadPageState extends State<MicUploadPage> {
               child: Container(
                 margin: const EdgeInsets.fromLTRB(20, 40, 20, 0),
                 child: Text(
-                  '1. Проверьте корректно ли записалось аудио',
+                  '1. Check whether the audio was recorded correctly',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 20,
@@ -279,7 +279,7 @@ class MicUploadPageState extends State<MicUploadPage> {
               child: Container(
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: Text(
-                  '2. Отправить или презаписать?',
+                  '2. Send or overwrite?',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 20,
@@ -443,7 +443,7 @@ class MicResultPageState extends State<MicResultPage> {
 
               return snapshot.hasData
                   ? Center(
-                      child: Column(
+                      child: ListView(
                         children: <Widget>[
                           SizedBox(
                             height: 100,

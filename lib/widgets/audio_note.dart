@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awsome_text/widgets/progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:awsome_text/widgets/music_player.dart';
@@ -15,10 +16,11 @@ class AudioNote extends StatelessWidget {
   MusicPlayerColorStyle _style;
   String _path;
   String _text;
+
   AudioNote(this._path, this._text, {
     width: 400.0,
     style: null,
-    backgroundColor: Colors.greenAccent,
+    backgroundColor: Colors.green,
     borderColour: Colors.white,
     backgroundTextColor: Colors.blue
   }) {
@@ -30,12 +32,13 @@ class AudioNote extends StatelessWidget {
     //printFile();
   }
 
-  AudioNote.fromFile(fileName){
+  factory AudioNote.fromFile(fileName){
     File input = File(fileName);
     String inputBody = input.readAsStringSync();
 
     var path = inputBody.split('~');
-    AudioNote(path[0].trim(),path[1].trim());
+   return AudioNote(path[0].trim(),path[1].trim()
+    );
   }
 
 

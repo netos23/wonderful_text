@@ -31,7 +31,7 @@ String _clientId;
 
     final requestBody = jsonEncode(_configureRequest(path, configuration.isPunctuation,configuration.language));
 
-    final response = await client.post("http://192.168.0.24:8090/mic",
+    final response = await client.post("http://fbtw.ru/mic",
         //encoding:Encoding.getByName("utf-8"),
         headers: {
           'Content-type':'application/json'
@@ -83,36 +83,48 @@ class CameraHttpClient extends FbtwHttpClient{
 
   @override
   Future<String> postRequest(http.Client client,  String path) async {
-    CameraPageConfiguration configuration = CameraPageConfiguration();
-    await configuration.mkDir();
+    try {
+      CameraPageConfiguration configuration = CameraPageConfiguration();
+      await configuration.mkDir();
 
-    final request = _configureRequest(path, configuration.type, configuration.language);
-    final parsedRequest = json.encode(request);
+      final request = _configureRequest(
+          path, configuration.type, configuration.language);
+      final parsedRequest = json.encode(request);
 
-    final response = await client.post("http://192.168.0.24:8080/camera",
+      final response = await client.post("http://fbtw.ru/camera",
+        encoding: Encoding.getByName('UTF-8'),
         headers: {
-          'Content-type':'application/json'
+          'Content-type': 'application/json',
+          'Connection':'keep-alive',
+          'User-Agent':'PostmanRuntime/7.24.0',
+
+    //'Content-Length':'${utf8.encode(parsedRequest).length}',
+          //'host':'<calculated when request is sent>'
         },
         body: parsedRequest,
-    );
-    ResponseModel responseModel = _parseResponse(response.body);
-    print(responseModel.clientId);
-    if(responseModel.message=="ok"){
-      _clientId = responseModel.clientId;
-      try {
-        String encodedText = responseModel.body;
+      );
+      print(response.body);
+      ResponseModel responseModel = _parseResponse(response.body);
+      print(responseModel.clientId);
+      if (responseModel.message == "ok") {
+        _clientId = responseModel.clientId;
+        try {
+          String encodedText = responseModel.body;
 
-        var textBytes = base64.decode(encodedText);
+          var textBytes = base64.decode(encodedText);
 
-        return utf8.decode(textBytes);
-      }catch(E){
-        print(E);
-        return 'error';
+          return utf8.decode(textBytes);
+        } catch (E) {
+          print(E);
+          return 'error';
+        }
+      } else {
+        return responseModel.message;
       }
-    }else{
-      return responseModel.message;
+    }catch (e){
+      print(e);
+      return "internal error";
     }
-
   }
 
   String get clientId => _clientId;

@@ -204,14 +204,16 @@ class MusicPlayerState extends State<MusicPlayer> {
             _path
         );
          _mediaInfo = _player.onPlayerStateChanged.listen((event) {
-          DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-              event.currentPosition.toInt());
-          setState(() {
-            _currentTime = '${date.minute}:${date.second}';
-            _progressBar.updateProgress(
-                100 * event.currentPosition / event.duration);
-            _currentTimeValue = event.currentPosition;
-          });
+           if(event!=null) {
+             DateTime date = new DateTime.fromMillisecondsSinceEpoch(
+                 event.currentPosition.toInt());
+             setState(() {
+               _currentTime = '${date.minute}:${date.second}';
+               _progressBar.updateProgress(
+                   100 * event.currentPosition / event.duration);
+               _currentTimeValue = event.currentPosition;
+             });
+           }
         });
         break;
       case t_AUDIO_STATE.IS_PLAYING:

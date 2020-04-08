@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:awsome_text/bar_pages/mic_page.dart';
 import 'package:awsome_text/bar_pages/camera_page.dart';
-import 'package:awsome_text/bar_pages/docgen_page.dart';
 import 'package:awsome_text/bar_pages/pdf_page.dart';
 import 'package:awsome_text/bar_pages/more_page.dart';
+import 'package:flutter/services.dart';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -23,7 +23,6 @@ class HomePageState extends State<HomePage>{
     MicPage(),
     CameraPage(),
     PDFPage(),
-    DocGenPage(),
     MorePage()
   ];
 
@@ -43,8 +42,10 @@ class HomePageState extends State<HomePage>{
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     _isFirstLaunch = _getLaunch();
-
   }
 
   @override
@@ -86,7 +87,7 @@ class HomePageState extends State<HomePage>{
         items: const<BottomNavigationBarItem>[
           BottomNavigationBarItem(
               backgroundColor: Colors.green,
-              title: Text('Audio notes'),
+              title: Text('Voice notes'),
               icon: Icon(
                 Icons.mic_none,
               )
@@ -94,18 +95,13 @@ class HomePageState extends State<HomePage>{
           BottomNavigationBarItem(
               backgroundColor: Colors.green,
               icon: Icon(Icons.camera_alt),
-              title: Text('Foto text')
+              title: Text('Camera')
           ),
           BottomNavigationBarItem(
               backgroundColor: Colors.green,
               icon: Icon(Icons.picture_as_pdf),
-              title: Text('Make pdf')
+              title: Text('PDF creator')
           ),
-          /*BottomNavigationBarItem(
-              backgroundColor: Colors.blue,
-              icon: Icon(Icons.featured_play_list),
-              title: Text('Doc-gen')
-          ),*/
           BottomNavigationBarItem(
               backgroundColor: Colors.green,
               icon: Icon(Icons.more_horiz),
@@ -233,8 +229,11 @@ class HomePageState extends State<HomePage>{
                     'images/sync.png',
                     scale: 0.8,
                 ),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
-                  'Register or start using the app',
+                  'Start using the app',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.white,
@@ -245,28 +244,6 @@ class HomePageState extends State<HomePage>{
                 SizedBox(
                 height: 50,
                 ),
-                /*Container(
-                  width: 250,
-                  height: 50,
-                  margin: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.all(Radius.circular(25))
-                  ),
-                  child:FlatButton(
-
-                    onPressed: (){},
-                    //color: Colors.blue,
-                    child: Text(
-                      'SING UP',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 30
-                      ),
-                    ),
-                  ) ,
-                ),*/
                 Container(
                   width: 250,
                   height: 50,

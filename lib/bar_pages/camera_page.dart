@@ -26,7 +26,7 @@ class CameraPageState extends State<CameraPage>with WidgetsBindingObserver{
   Future<bool> _futureContent;
 
   String _path;
-  final title = "camera";
+  final title = "Camera";
 
   @override
   void initState() {
@@ -629,10 +629,11 @@ class CameraResultPage extends StatelessWidget{
             builder: (context,snap){
               return snap.hasData
                   ? Center(
-                    child: Column(
+                    child: ListView(
+                      padding: EdgeInsets.all(15),
                       children: <Widget>[
                         SizedBox(
-                          height: 100,
+                          height: 50,
                         ),
                         _buildNote(snap),
                         FloatingActionButton(

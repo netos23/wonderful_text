@@ -26,7 +26,7 @@ class SharePage extends StatefulWidget{
 
 class SharePageState extends State<SharePage> {
 
-  String _serverUrl = "http://192.168.0.24:8088/downloadFile/";
+  String _serverUrl = "http://fbtw.ru/export/downloadFile/";
   final String _textToExport;
   final String _clientId;
   BuildContext _currentContext;

@@ -197,7 +197,7 @@ class UploadPageState extends State<UploadPage>{
   FlutterUploader uploader;
   ReceivePort _port = ReceivePort();
 
-  String _serverUrl = 'http://192.168.0.24:8088/getPdf/';
+  String _serverUrl = 'http://fbtw.ru/export/getPdf/';
 
   UploadPageState(this._pdfContent,this._title);
 
@@ -271,7 +271,7 @@ class UploadPageState extends State<UploadPage>{
 
   void _uploadFiles() async{
     final taskId = await uploader.enqueue(
-        url: 'http://192.168.0.24:8088/uploadMultipleFiles',
+        url: 'http://fbtw.ru/export/uploadMultipleFiles',
         files: _convertToItems(),
         method: UploadMethod.POST,
         headers: {
@@ -293,10 +293,10 @@ class UploadPageState extends State<UploadPage>{
           _ReturnError();
       }
     },
-    cancelOnError: true,
+    /*cancelOnError: true,
       onError: (){
         _ReturnError();
-      }
+      }*/
     );
     var progress = uploader.progress.listen((event) {
       if(event.status==UploadTaskStatus.complete){

@@ -114,12 +114,6 @@ class AudioRecorderState extends State<AudioRecorder> {
         if (event != null) {
           _currentTime = new DateTime.fromMillisecondsSinceEpoch(
               event.currentPosition.toInt());
-         /* this.setState(() {
-            //this._isPlaying = true;
-            this._timeLine = Text(date.minute.toString() + " : " +
-                date.second.toString() + "/ 5 : 00");
-          });*/
-
           if (_currentTime.minute >= _modes[configuration.maximumDuration]) {
             _stopRecord();
           }
@@ -155,8 +149,23 @@ class AudioRecorderState extends State<AudioRecorder> {
 
   @override
   void dispose() {
+    if (_recorder.audioState == t_AUDIO_STATE.IS_RECORDING) {
+      _state = -1;
+      _stateChange(_state);
+       _recorder.stopRecorder();
+
+      if (_recorderSubscribtion != null) {
+        _recorderSubscribtion.cancel();
+        _recorderSubscribtion = null;
+      }
+
+      if (_radius != null) {
+        _radius.cancel();
+        _radius = null;
+      }
+
+    }
     super.dispose();
-    _stopRecord();
   }
 
 
