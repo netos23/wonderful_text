@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:awsome_text/widgets/decoration.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:toast/toast.dart';
+import 'package:uuid/uuid.dart';
 
 
 
@@ -272,7 +273,7 @@ class UploadPageState extends State<UploadPage>{
   void _uploadFiles() async{
     final taskId = await uploader.enqueue(
         url: 'http://fbtw.ru/export/uploadMultipleFiles',
-        files: _convertToItems(),
+        files: await _convertToItems(),
         method: UploadMethod.POST,
         headers: {
           'Content-Type':'multipart/form-data; boundary=<calculated when request is sent>',
@@ -334,17 +335,21 @@ class UploadPageState extends State<UploadPage>{
     
   }
 
-  List<FileItem> _convertToItems(){
+  Future<List<FileItem>> _convertToItems() async{
     int indicator = 0;
     List<FileItem> result = <FileItem>[];
+    Directory storge = await getTemporaryDirectory();
+    File storgeHolder = File(storge.path+"/${Uuid().v1()}/tmp.txt");
+    storgeHolder.createSync(recursive: true);
     for(var element in _pdfContent){
       var path = element.path;
-      var beginIndex = path.lastIndexOf('/')+1;
       var endIndex = path.lastIndexOf('.');
-      path = element.renameSync(path.substring(0,beginIndex) + '${indicator++}'+ path.substring(endIndex)).path;
+      var filename = '${indicator++}${path.substring(endIndex)}';
+      File elementNew = element.copySync(storgeHolder.parent.path+'/$filename');
+
       result.add(FileItem(
-          filename: (path.substring(beginIndex)),
-          savedDir: element.parent.path,
+          filename: filename,
+          savedDir: elementNew.parent.path,
           fieldname: 'files'
       ));
     }

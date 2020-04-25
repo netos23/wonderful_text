@@ -74,6 +74,15 @@ class HomePageState extends State<HomePage>{
       return true;
     }else{
       _initConfig.createSync(recursive: true);
+
+      File micConfig = File('${configPath.path}/config/audio.config');
+      micConfig.createSync(recursive: true);
+      micConfig.writeAsStringSync('0 2 true');
+
+      File cameraConfig = File('${configPath.path}/config/camera.config');
+      cameraConfig.createSync(recursive: true);
+      cameraConfig.writeAsStringSync('2 2 1');
+
       _isStateChenge = true;
       return false;
     }

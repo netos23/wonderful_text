@@ -217,8 +217,6 @@ class MicUploadPage extends StatefulWidget{
   @override
   MicUploadPageState createState() => _micUploadPageState;
 
-
-
 }
 
 class MicUploadPageState extends State<MicUploadPage> {
@@ -241,11 +239,7 @@ class MicUploadPageState extends State<MicUploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        /*leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: _return,
-          iconSize: 30,
-        ),*/
+
         title: Text(
             _title
         ),
